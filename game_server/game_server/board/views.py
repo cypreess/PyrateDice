@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -8,7 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.views.generic import UpdateView
 import requests
-from board.models import UserProfile
+from board.models import UserProfile, BoardStates
 
 
 @login_required()
@@ -16,9 +15,67 @@ def secret_page(request, *args, **kwargs):
     return HttpResponse('Secret contents!', status=200)
 
 
-@staff_member_required()
-def game(request, *args, **kwargs):
-    return render_to_response('board/game.html')
+@login_required()
+def start_game(request, *args, **kwargs):
+    if not request.user.is_superuser:
+        return HttpResponse('You should be admin to display this page')
+
+    BoardStates.delete()
+
+    empty_board_state = {
+        "results": {
+            "new_die": "",
+            "player_lose": "",
+            "player_win": "",
+        },
+        "board": []
+    }
+
+    gamers = []
+    for user in UserProfile.active_gamers.all():
+        gamers.append({
+            "name": user.user_name,
+            "avatar" : "",
+            "dice": [],
+            "bid": [],
+            "current": False,
+            "active": True,
+        })
+
+    gamers.shuffle()
+
+    #
+    # {
+    # "results" : {
+    # "new_die" : "player_name", # ""
+    # 		"player_lose" : "player_name", # or ""
+    # 		"player_win": "player_name", # ""
+    # 	},
+    # 	"board" : [
+    # 		{
+    # 			id: 1,
+    # 			name: "cypreess",
+    # 			avatar: http://...,
+    # 			dice: [1,2,3,4],
+    # 			bid: [2, 5],  #  [] == CHECK
+    # 			current: ture #
+    # 			active: true #
+    # 		},
+    #
+    # 		{
+    # 		... user 2 ...
+    # 		}
+    #
+    # 	]
+    # }
+
+    BoardStates.objects.create(iteration=0)
+    return HttpResponse('Start new')
+
+
+@login_required()
+def board(request, *args, **kwargs):
+    return render_to_response('board/board.html')
 
 
 class UserProfileUpdate(UpdateView):
