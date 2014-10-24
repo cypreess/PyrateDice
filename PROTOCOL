@@ -10,8 +10,8 @@
 			name: "cypreess",
 			avatar: http://...,
 			dice: [1,2,3,4],
-			bid: [2, 5],  #  [] == CHECK
-			current: ture #
+			bid: [2, 5],  #  [] == no bid yet, 'check' - check
+			current: true #
 			active: true #
 		},
 
