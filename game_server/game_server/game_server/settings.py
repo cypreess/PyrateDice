@@ -26,6 +26,7 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+REGISTRATION_AUTO_LOGIN = True
 
 # Application definition
 
@@ -36,6 +37,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'oauth2_provider',
+    'board',
+    'registration',
+)
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR , 'templates'),
 )
 
 MIDDLEWARE_CLASSES = (
@@ -46,7 +54,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'oauth2_provider.middleware.OAuth2TokenMiddleware',
+
 )
+
+
+# AUTHENTICATION_BACKENDS = (
+#     'oauth2_provider.backends.OAuth2Backend',
+# )
 
 ROOT_URLCONF = 'game_server.urls'
 

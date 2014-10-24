@@ -1,0 +1,10 @@
+{% include 'base.html' %}
+
+{% block body %}
+    <form method="post">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <input type="submit" value="login">
+
+    </form>
+{% endblock %}
