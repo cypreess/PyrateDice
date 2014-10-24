@@ -1,0 +1,23 @@
+{
+	"results" : {
+		"new_die" : "player_name", # ""
+		"player_lose" : "player_name", # or ""
+		"player_win": "player_name", # ""
+	},
+	"players" : [
+		{
+			id: 1,
+			name: "cypreess",
+			avatar: http://...,
+			dice: [1,2,3,4],
+			bid: [2, 5],  #  [] == CHECK
+			current: ture #
+			active: true #
+		},
+
+		{
+		... user 2 ...
+		}
+
+	]
+}

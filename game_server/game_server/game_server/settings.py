@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -43,7 +44,7 @@ INSTALLED_APPS = (
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR , 'templates'),
+    os.path.join(BASE_DIR, 'templates'),
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,10 +58,10 @@ MIDDLEWARE_CLASSES = (
     # 'oauth2_provider.middleware.OAuth2TokenMiddleware',
 
 )
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'statics')
 
 # AUTHENTICATION_BACKENDS = (
-#     'oauth2_provider.backends.OAuth2Backend',
+# 'oauth2_provider.backends.OAuth2Backend',
 # )
 
 ROOT_URLCONF = 'game_server.urls'
