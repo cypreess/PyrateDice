@@ -1,3 +1,11 @@
 CherryPy==3.6.0
 Django==1.7.1
+django-braces==1.4.0
+django-jsonfield==0.9.13
+django-oauth-toolkit==0.7.2
+django-registration-redux==1.1
+oauthlib==0.6.3
+requests==2.4.3
+shortuuid==0.4.2
+six==1.8.0
 wsgiref==0.1.2

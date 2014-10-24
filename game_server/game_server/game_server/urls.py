@@ -8,7 +8,8 @@ urlpatterns = patterns('',
     # url(r'^$', 'game_server.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^game', 'board.views.game', name='game'),
+    url(r'^start_game', 'board.views.start_game', name='start_game'),
+    url(r'^board', 'board.views.board', name='board'),
 
     (r'^accounts/', include('registration.backends.default.urls')),
     url(r'^accounts/profile', login_required(UserProfileUpdate.as_view()), name='profile'),
