@@ -4,7 +4,7 @@
 		"player_lose" : "player_name", # or ""
 		"player_win": "player_name", # ""
 	},
-	"players" : [
+	"board" : [
 		{
 			id: 1,
 			name: "cypreess",
