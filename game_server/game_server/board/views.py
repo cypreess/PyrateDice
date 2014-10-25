@@ -27,6 +27,7 @@ def start_game(request, *args, **kwargs):
     BoardState.objects.all().delete()
 
     empty_board_state = {
+        "the_end": False,
         "message": "",
         "last_player": None,
         "players": []
@@ -40,7 +41,6 @@ def start_game(request, *args, **kwargs):
             "avatar": "",
             "dice": [randrange(1, 6)],
             "bid": [],
-            "current": False,
             "active": True,
         })
 
