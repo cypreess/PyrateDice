@@ -13,17 +13,16 @@
           for(var j in data.players){
               var player = data.players[j];
 
-              //skip players that were banned
-              if (player.active == false){
-                  continue;
-              }
-
-               //moving frame
+              //moving frame{
               var $currentPlayerInfo = $('<div class="col-md-6"></div>');
               if (player.id === data.last_player){
                  $currentPlayerInfo.css({'border':'solid red'});
               }
-              console.log($currentPlayerInfo);
+
+              //skip player only if was not banned in the last round
+              if (player.active === false && player.id !== data.last_player){
+                  continue;
+              }
 
               // player avatar and name
               var $playerID = $('<div class="col-md-12 col-xs-12 nopadding"></div>');
@@ -76,7 +75,9 @@
           }
           var $messageBox = $('h1#messageText');
           $messageBox.html(data.message);
+
+          if (data.the_end == true) iterationNumber=-1;
       });
     }
 
-    setInterval(function() {refreshGameState()}, 4000);
+    setInterval(function() { if (iterationNumber ==-1){ return;}refreshGameState()}, 1000);
