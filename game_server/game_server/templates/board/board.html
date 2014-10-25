@@ -63,16 +63,16 @@
               var $currentPlayerInfo = $('<div class="col-md-6"></div>');
 
               // player avatar and name
-              var $playerID = $('<div class="col-md-12 col-xs-12 " style="border:solid"></div>');
+              var $playerID = $('<div class="col-md-12 col-xs-12 nopadding"></div>');
               var $playerName = $('<div class="col-md-9 col-xs-9 " style="padding-top:5%"><b>' + player.name + '</b></div>');
               // add avatar only if exists
               var $playerAvatarImg = $('<img class="scaled">');
               if (player.avatar !== ''){
                 $playerAvatarImg.attr({'src': player.avatar})
               } else {
-                $playerAvatarImg.attr({'src': 'img/avatar-blank.jpg'})
+                $playerAvatarImg.attr({'src': '../../board/static/img/avatar-blank.jpg'})
               }
-              var $playerAvatar = $('<div class="col-md-3 col-xs-3 "></div>').append($playerAvatarImg);
+              var $playerAvatar = $('<div class="col-md-3 col-xs-3 nopadding"></div>').append($playerAvatarImg);
 
               $playerID.append($playerAvatar);
               $playerID.append($playerName);
@@ -88,7 +88,7 @@
                 var die = dice[die];
 
                 var $dieImgs = $('<img class="scaled">')
-                  .attr({'src': 'img/'+die+'k6.png'});
+                  .attr({'src': '../../board/static/img/'+die+'k6.png'});
 
                 $('<div class="col-md-2 col-xs-2  nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($diceDiv);
               }
@@ -102,7 +102,7 @@
                 var die = bid[die];
 
                 var $dieImgs = $('<img class="scaled">')
-                  .attr({'src': 'img/'+die+'k6.png'});
+                  .attr({'src': '../../board/static/img/'+die+'k6.png'});
 
                 $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
               }
@@ -135,7 +135,7 @@
 <div class="container">
 
     <!-- Static navbar -->
-    <img src="../../board/static/img/logo.png" class="img-responsive" alt="Responsive image">
+    <img src="../../../../assets/logo.jpg" class="img-responsive" alt="Responsive image">
     <div class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
