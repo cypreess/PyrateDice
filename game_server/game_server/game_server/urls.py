@@ -8,7 +8,8 @@ urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
 
     url(r'^start_game', 'board.views.start_game', name='start_game'),
-    url(r'^board', 'board.views.board', name='board'),
+    url(r'^board_state/(?P<pk>[0-9]+)/$', 'board.views.board_json', name='board_state'),
+    url(r'^board$', 'board.views.board', name='board'),
 
     (r'^accounts/', include('registration.backends.default.urls')),
     url(r'^accounts/profile', login_required(UserProfileUpdate.as_view()), name='profile'),
