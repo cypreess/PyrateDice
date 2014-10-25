@@ -28,28 +28,29 @@
 //          console.debug(data);
 //      });
             var mockData = {
-                "results" : {
-                    "new_die" : "player_name",
-                    "player_lose" : "player_name",
-                    "player_win": "player_name"
+                "empty_board_state" : {
+                    "the_end": false,
+                    "message": "cypreess won!",
+                    "last_player": 1,
+                    "players": []
                 },
-                "board" : [
+                "players" : [
                     {
                         id: 1,
                         name: "cypreess",
+                        url: '',
                         avatar: '',
                         dice: [1,2,3,4],
                         bid: [2, 5],
-                        current: true,
                         active: true
                     },
                     {
                         id: 2,
                         name: "p2",
+                        url: '',
                         avatar: '',
                         dice: [1,4,4],
                         bid: [4, 1],
-                        current: false,
                         active: false
                     },
                 ]
@@ -57,8 +58,8 @@
 
             // build div with players info
             var $playersInfo = $('#players_info');            
-            for(var player in mockData.board){
-              var player = mockData.board[player];
+            for(var j in mockData.players){
+              var player = mockData.players[j];
 
               var $currentPlayerInfo = $('<div class="col-md-6"></div>');
 
@@ -70,9 +71,9 @@
               if (player.avatar !== ''){
                 $playerAvatarImg.attr({'src': player.avatar})
               } else {
-                $playerAvatarImg.attr({'src': '../../board/static/img/avatar-blank.jpg'})
+                $playerAvatarImg.attr({'src': '../../board/static/img/avatar-blank.jpg', "style":"margin-bottom: 2px"})
               }
-              var $playerAvatar = $('<div class="col-md-3 col-xs-3 nopadding"></div>').append($playerAvatarImg);
+              var $playerAvatar = $('<div class="col-md-3 col-xs-3 nopadding" ></div>').append($playerAvatarImg);
 
               $playerID.append($playerAvatar);
               $playerID.append($playerName);
@@ -111,18 +112,8 @@
               // finally add rest
               $playersInfo.append($currentPlayerInfo);
             }
-
-            // build list of platers
-            var $playersList = $('#playersList');
-            $playersList.append('<ul class="list-group"></ul>');
-            
-            for(var player in mockData.board){
-              var player = mockData.board[player];
-              var $listPlayer = $('<li class="list-group-item">'+player.name+'</li>');
-              if (player.current === true) $listPlayer.append('<span class="badge">C</span>');
-              if (player.active === false) $listPlayer.css({'opacity': 0.5})
-              $playersList.append($listPlayer);
-            }
+              var $messageBox = $('h1#messageText');
+              $messageBox.append(mockData.empty_board_state.message);
         }
 
         setTimeout(function() {refreshGameState()}, 1000);
@@ -145,43 +136,20 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Pyrate Dice</a>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Bueno</a></li>
-                    <li><a href="#">Mars</a></li>
-                    <li><a href="#">Snickers</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li class="divider"></li>
-                            <li class="dropdown-header">Nav header</li>
-                            <li><a href="#">Separated link</a></li>
-                            <li><a href="#">One more separated link</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="active"><a href="./">Default</a></li>
-                    <li><a href="../navbar-static-top/">Static top</a></li>
-                    <li><a href="../navbar-fixed-top/">Fixed top</a></li>
-                </ul>
-            </div><!--/.nav-collapse -->
+
+            <h1 id="messageText">
+
+            </h1>
         </div><!--/.container-fluid -->
     </div>
 
 
     <div class="row row-offcanvas row-offcanvas-right">
 
-        <div class="col-md-8" id="players_info"> </div>
+        <div class="col-md-12" id="players_info"> </div>
 
         <div role="navigation" class="col-md-4">
-        <div class="badge badge-info"><b>Players online</b></div>
-        <div  id="playersList"></div>
         </div><!--/span-->
     </div>
 
