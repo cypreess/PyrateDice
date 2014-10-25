@@ -7,13 +7,14 @@ from jsonfield import JSONField
 
 class UserProfilesGamersManager(models.Manager):
     def get_queryset(self):
-        return super(UserProfilesGamersManager, self).get_queryset().exclude(url__isnull=True)
+        return super(UserProfilesGamersManager, self).get_queryset().exclude(url__isnull=True).select_related('user')
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     url = models.URLField(blank=True, null=True, help_text="Provide http url of your machine")
     active_gamers = UserProfilesGamersManager()
+    objects = models.Manager()
 
 class BoardStates(models.Model):
     iteration = models.IntegerField(db_index=True)

@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,10 +12,10 @@
   <title>Navbar Template for Bootstrap</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
 
   <!-- Custom styles for this template -->
-  <link href="navbar.css" rel="stylesheet">
+  <link href="{% static "navbar.css" %}" rel="stylesheet">
 
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
@@ -40,7 +41,7 @@
   <div class="container">
 
     <!-- Static navbar -->
-    <img src="roost-logo1.png" class="img-responsive" alt="Responsive image">
+    <img src="{% static "roost-logo1.png" %}" class="img-responsive" alt="Responsive image">
     <div class="navbar navbar-default" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">

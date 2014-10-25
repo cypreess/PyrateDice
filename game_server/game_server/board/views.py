@@ -1,7 +1,10 @@
+from random import shuffle
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+
 
 # Create your views here.
 from django.shortcuts import render_to_response
@@ -20,7 +23,7 @@ def start_game(request, *args, **kwargs):
     if not request.user.is_superuser:
         return HttpResponse('You should be admin to display this page')
 
-    BoardStates.delete()
+    BoardStates.objects.all().delete()
 
     empty_board_state = {
         "results": {
@@ -32,44 +35,23 @@ def start_game(request, *args, **kwargs):
     }
 
     gamers = []
-    for user in UserProfile.active_gamers.all():
+    for user_profile in UserProfile.active_gamers.all():
         gamers.append({
-            "name": user.user_name,
-            "avatar" : "",
+            "name": user_profile.user.username,
+            "avatar": "",
             "dice": [],
             "bid": [],
             "current": False,
             "active": True,
         })
 
-    gamers.shuffle()
+    shuffle(gamers)
+    for i, gamer in enumerate(gamers, 1):
+        gamer['id'] = i
+    empty_board_state['board'] = gamers
 
-    #
-    # {
-    # "results" : {
-    # "new_die" : "player_name", # ""
-    # 		"player_lose" : "player_name", # or ""
-    # 		"player_win": "player_name", # ""
-    # 	},
-    # 	"board" : [
-    # 		{
-    # 			id: 1,
-    # 			name: "cypreess",
-    # 			avatar: http://...,
-    # 			dice: [1,2,3,4],
-    # 			bid: [2, 5],  #  [] == CHECK
-    # 			current: ture #
-    # 			active: true #
-    # 		},
-    #
-    # 		{
-    # 		... user 2 ...
-    # 		}
-    #
-    # 	]
-    # }
 
-    BoardStates.objects.create(iteration=0)
+    BoardStates.objects.create(iteration=0, data=empty_board_state)
     return HttpResponse('Start new')
 
 
