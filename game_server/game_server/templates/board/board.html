@@ -11,17 +11,17 @@
     <title>Navbar Template for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../board/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="navbar.css" rel="stylesheet">
+    <link href="../../board/static/css/navbar.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script src="jquery.min.js"></script>
+    <script src="../../board/static/js/jquery.min.js"></script>
     <script>
         var refreshGameState = function(){
 //      $.ajax('trololo.com', {data: 'myname'}).done(function(data){
@@ -50,59 +50,78 @@
                         dice: [1,4,4],
                         bid: [4, 1],
                         current: false,
-                        active: true
+                        active: false
                     },
                 ]
             }
 
-            var $playersInfo = $('#players_info');
-            //console.debug(mockData.board);
+            // build div with players info
+            var $playersInfo = $('#players_info');            
             for(var player in mockData.board){
               var player = mockData.board[player];
 
               var $currentPlayerInfo = $('<div class="col-md-6"></div>');
 
               // player avatar and name
-              var $playerID = $('<div class="col-md-12"></div>');
-              var $playerName = $('<div class="col-md-4">' + player.name + '</div>');
+              var $playerID = $('<div class="col-md-12 col-xs-12 " style="border:solid"></div>');
+              var $playerName = $('<div class="col-md-9 col-xs-9 " style="padding-top:5%"><b>' + player.name + '</b></div>');
               // add avatar only if exists
+              var $playerAvatarImg = $('<img class="scaled">');
               if (player.avatar !== ''){
-                var $playerAvatar = $('<div class="col-md-8"><img src="'+ player.avatar + '"></div>');
-                $playerID.append($playerAvatar);
+                $playerAvatarImg.attr({'src': player.avatar})
+              } else {
+                $playerAvatarImg.attr({'src': 'img/avatar-blank.jpg'})
               }
+              var $playerAvatar = $('<div class="col-md-3 col-xs-3 "></div>').append($playerAvatarImg);
+
+              $playerID.append($playerAvatar);
               $playerID.append($playerName);
               $currentPlayerInfo.append($playerID);
 
+              // dice
               // player's dice
-              var $diceDiv = $('<div class="col-md-12"></div>');
+              $('<div class="col-md-12 col-xs-12 badge badge-info">Player\'s dice</div>').appendTo($currentPlayerInfo);
+              var $diceDiv = $('<div class="col-md-12 col-xs-12 "></div>');
 
               var dice = player.dice;
               for(var die in dice){
                 var die = dice[die];
 
-                var $dieImgs = $('<img class="dice">')
+                var $dieImgs = $('<img class="scaled">')
                   .attr({'src': 'img/'+die+'k6.png'});
 
-                $('<div class="col-md-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($diceDiv);
+                $('<div class="col-md-2 col-xs-2  nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($diceDiv);
               }
               $currentPlayerInfo.append($diceDiv);
 
               // player's bid
-              var $bidDiceDiv = $('<div class="col-md-12"></div>');
+              $('<div class="col-md-12 col-xs-12  badge badge-info">Last bid</div>').appendTo($currentPlayerInfo);
+              var $bidDiceDiv = $('<div class="col-md-12 col-xs-12 " ></div>');
               var bid = player.bid;
               for (var die in bid){
                 var die = bid[die];
 
-                var $dieImgs = $('<img class="dice">')
+                var $dieImgs = $('<img class="scaled">')
                   .attr({'src': 'img/'+die+'k6.png'});
 
-                $('<div class="col-md-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
+                $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
               }
               $currentPlayerInfo.append($bidDiceDiv);
 
               // finally add rest
               $playersInfo.append($currentPlayerInfo);
+            }
 
+            // build list of platers
+            var $playersList = $('#playersList');
+            $playersList.append('<ul class="list-group"></ul>');
+            
+            for(var player in mockData.board){
+              var player = mockData.board[player];
+              var $listPlayer = $('<li class="list-group-item">'+player.name+'</li>');
+              if (player.current === true) $listPlayer.append('<span class="badge">C</span>');
+              if (player.active === false) $listPlayer.css({'opacity': 0.5})
+              $playersList.append($listPlayer);
             }
         }
 
@@ -116,7 +135,7 @@
 <div class="container">
 
     <!-- Static navbar -->
-    <img src="roost-logo1.png" class="img-responsive" alt="Responsive image">
+    <img src="../../board/static/img/logo.png" class="img-responsive" alt="Responsive image">
     <div class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -161,9 +180,8 @@
         <div class="col-md-8" id="players_info"> </div>
 
         <div role="navigation" class="col-md-4">
-            <div class="jumbotron">
-                t is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-            </div>
+        <div class="badge badge-info"><b>Players online</b></div>
+        <div  id="playersList"></div>
         </div><!--/span-->
     </div>
 
@@ -179,6 +197,3 @@
 <script src="bootstrap/js/ie10-viewport-bug-workaround.js"></script>
 </body>
 </html>
-
-
-
