@@ -1,17 +1,14 @@
 #!/usr/bin/env python
+
 import argparse
 import json
 import sys
-import time
-
 import cherrypy
-
 
 class Pirate(object):
     @cherrypy.expose
     def ping(self):
         return "pong\n"
-
 
     @cherrypy.expose
     def error(self, message):
@@ -19,17 +16,17 @@ class Pirate(object):
         return "OK\n"
 
     @cherrypy.expose
-    def bid(self, data):
-        try:
-            data = json.loads(data)
-        except ValueError:
-            return "BAD JSON\n"
+    @cherrypy.tools.json_in()
+    def bid(self):
+        data = cherrypy.request.json
         return json.dumps(self.do_bid(data))
 
-
     def do_bid(self, data):
-        print data
-        return 1, 2
+        # Example input: {"players": [{"id": 0, "dice": 1, "name": "Player2"}, {"id": 2, "dice": 1, "name": "Player1"}], "gameplay": [[0, "Player2", 1, 2]], "dice": [3], "id": 2}
+        #
+
+        raise NotImplementedError()
+
 
     def get_argparser(self):
         parser = argparse.ArgumentParser(description='Runs yours pirate.')
