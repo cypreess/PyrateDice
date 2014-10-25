@@ -7,8 +7,8 @@ from django.http import HttpResponse
 
 
 # Create your views here.
-from django.shortcuts import render_to_response
-from django.views.generic import UpdateView
+from django.shortcuts import render_to_response, get_object_or_404
+from django.views.generic import UpdateView, DetailView
 import requests
 from board.models import UserProfile, BoardState
 from board.tasks import board_iteration
@@ -39,7 +39,7 @@ def start_game(request, *args, **kwargs):
             "name": user_profile.user.username,
             "url": user_profile.url,
             "avatar": "",
-            "dice": [randrange(1, 6)],
+            "dice": [],
             "bid": [],
             "active": True,
         })
@@ -64,6 +64,13 @@ def start_game(request, *args, **kwargs):
 @login_required()
 def board(request, *args, **kwargs):
     return render_to_response('board/board.html')
+
+
+@login_required()
+def board_json(request, pk):
+    object = get_object_or_404(BoardState.objects.filter(iteration=pk))
+    return HttpResponse(str(object.board_data))
+
 
 
 class UserProfileUpdate(UpdateView):

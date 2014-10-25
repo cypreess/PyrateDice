@@ -28,6 +28,7 @@ class Pirate(object):
 
 
     def do_bid(self, data):
+        print data
         return 1, 2
 
     def get_argparser(self):

@@ -1,6 +1,8 @@
 from __future__ import absolute_import
+from copy import deepcopy
 from itertools import cycle
 import json
+from random import randrange
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -11,6 +13,7 @@ from board.models import BoardState
 
 logger = get_task_logger(__name__)
 
+MAX_DICE = 5
 
 
 class GameError(Exception):
@@ -43,11 +46,14 @@ def get_move(url, data):
     return count, die
 
 
-def check_move(count, die, gameplay, players):
+def check_move(count, die, gameplay, dice_count):
     if not ((count == 0 and die == 0) or (count > 0 and die >= 1 and die <= 6)):
         raise GameError('Bid must be (0, 0) or ( >0 , 1..6 )')
     if count == 0 and die == 0 and len(gameplay) == 0:
         raise GameError('Cannot call as the first player')
+
+    if count > dice_count:
+        raise GameError('Too high bid')
 
     if gameplay:
         player_id, player_name, last_count, last_die = gameplay[-1]
@@ -77,6 +83,16 @@ def board_iteration(iteration):
 
         if board_data[u'last_player'] is None:
             next_player = 0
+            # initialize new dice for new game
+
+            for player in state_data['players']:
+                if board_data['players'][player['id']]['active']:
+                    board_data['players'][player['id']]['dice'] = []
+                    for i in range(player['dice']):
+                        board_data['players'][player['id']]['dice'].append(randrange(1, 6))
+                else:
+                    board_data['players'][player['id']]['dice'] = []
+
         else:
             players_queue = cycle(board_data[u'players'])
             for i in xrange(board_data[u'last_player']+1):
@@ -106,12 +122,56 @@ def board_iteration(iteration):
         logger.warning('Asking player ID=%d [%s] (%s) for bid.' % (player_id, player_name, player_url))
 
         try:
-            count, die = get_move(player_url + '/bid', {'data': json.dumps(state_data)})
-            check_move(count, die, state_data['gameplay'], board_data['players'])
+            user_data = deepcopy(state_data)
+            user_data['players'] = [p for p in user_data['players'] if board_data['players'][p['id']]['active']]
+            user_data['dice'] = board_data['players'][player_id]['dice']
+            user_data['id'] = player_id
+
+            count, die = get_move(player_url + '/bid', {'data': json.dumps(user_data)})
+            check_move(count, die, state_data['gameplay'], sum([len(x['dice']) for x in board_data['players'] if x['active']]))
 
             if count == 0 and die == 0:
+                last_player_id, last_player_name, last_count, last_die = state_data['gameplay'][-1]
+
+
                 # Player calls
                 logger.warning("Player ID=%d [%s] (%s) - CALL" % (player_id, player_name, player_url))
+                dice_count_list = []
+                for player_dice in board_data['players']:
+                    dice_count_list += player_dice
+                dice_count = len([d for d in dice_count_list if d == last_die])
+                if dice_count >= last_count:
+                    # User call - success
+                    logger.warning("Player %s calls and WIN" % player_name)
+                    board_data['message'] = "Player %s calls and WIN" % player_name
+
+                    if len(board_data['players']['last_player_id']['dice']) >= MAX_DICE:
+                        # Last player looses
+                        board_data['players']['last_player_id']['active'] = False
+                    else:
+                        # Last player takes one die
+                        state_data['players']['last_player_id']['dice'] + 1
+
+
+
+                else:
+                    # User failed
+                    logger.warning("Player %s calls and LOOSE" % player_name)
+                    board_data['message'] = "Player %s calls and LOOSE" % player_name
+
+                    if len(board_data['players']['player_id']['dice']) >= MAX_DICE:
+                        # Player looses
+                        board_data['players']['player_id']['active'] = False
+                    else:
+                        # Player takes one die
+                        state_data['players']['player_id']['dice'] + 1
+
+
+                board_data['last_player'] = None
+                state_data['gameplay'].append(player_id, player_name, last_count, last_die)
+                BoardState.objects.create(iteration=iteration, board_data=board_data, state_data=state_data)
+
+
 
             else:
                 # Player bids

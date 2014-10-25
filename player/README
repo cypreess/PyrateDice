@@ -1,0 +1,14 @@
+Client receives a similar JSON:
+
+{
+    u'players': [
+        {u'id': 0, u'name': u'Player2', u'dice': 1},
+        {u'id': 1, u'name': u'Player1', u'dice': 1}
+    ],
+    u'gameplay': [],
+    u'dice': [3],
+    u'id': 0
+}
+
+
+players = all players in the game
