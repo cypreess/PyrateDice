@@ -98,11 +98,11 @@
               $('<div class="col-md-12 col-xs-12  badge badge-info">Last bid</div>').appendTo($currentPlayerInfo);
               var $bidDiceDiv = $('<div class="col-md-12 col-xs-12 " ></div>');
               var bid = player.bid;
-              for (var die in bid){
-                var die = bid[die];
-
+              var quantity = dice[1];
+              var diceValue = dice[2];
+              for (var i=0; i<quantity; i++){
                 var $dieImgs = $('<img class="scaled">')
-                  .attr({'src': '../../board/static/img/'+die+'k6.png'});
+                  .attr({'src': '../../board/static/img/'+diceValue+'k6.png'});
 
                 $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
               }
