@@ -18,7 +18,8 @@ class UserProfile(models.Model):
 
 class BoardStates(models.Model):
     iteration = models.IntegerField(db_index=True)
-    data = JSONField()
+    board_data = JSONField()
+    state_data = JSONField()
 
 
 # noinspection PyUnresolvedReferences

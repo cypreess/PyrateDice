@@ -11,7 +11,7 @@ from django.shortcuts import render_to_response
 from django.views.generic import UpdateView
 import requests
 from board.models import UserProfile, BoardStates
-
+from board.tasks import board_iteration
 
 @login_required()
 def secret_page(request, *args, **kwargs):
@@ -50,8 +50,16 @@ def start_game(request, *args, **kwargs):
         gamer['id'] = i
     empty_board_state['board'] = gamers
 
+    empy_state_data = {
+        'gameplay': [],
+        'players': []
+    }
+    for user in gamers:
+        empy_state_data['players'].append({'id': user['id'], 'name': user['name'], 'dice': 1})
 
-    BoardStates.objects.create(iteration=0, data=empty_board_state)
+
+    BoardStates.objects.create(iteration=0, board_data=empty_board_state, state_data=empy_state_data)
+    board_iteration.delay(iteration=1)
     return HttpResponse('Start new')
 
 

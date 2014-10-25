@@ -21,3 +21,16 @@
 
 	]
 }
+
+
+{
+    gameplay: [
+        [1, (2,3)],
+
+    ],
+    players: [
+        {id:1, name:'player', dice:3}
+    ]
+
+
+}
