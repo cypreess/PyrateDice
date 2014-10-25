@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,54 +12,56 @@
     <title>Navbar Template for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../../board/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="../../board/static/css/navbar.css" rel="stylesheet">
+    <link href="{% static "css/navbar.css" %}" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script src="../../board/static/js/jquery.min.js"></script>
+
+    <script src="{% static "js/jquery.min.js" %}"></script>
     <script>
         var refreshGameState = function(){
 //      $.ajax('trololo.com', {data: 'myname'}).done(function(data){
 //          console.debug(data);
 //      });
             var mockData = {
-                "results" : {
-                    "new_die" : "player_name",
-                    "player_lose" : "player_name",
-                    "player_win": "player_name"
+                "empty_board_state" : {
+                    "the_end": false,
+                    "message": "cypreess won!",
+                    "last_player": 1,
+                    "players": []
                 },
-                "board" : [
+                "players" : [
                     {
                         id: 1,
                         name: "cypreess",
+                        url: '',
                         avatar: '',
                         dice: [1,2,3,4],
                         bid: [2, 5],
-                        current: true,
                         active: true
                     },
                     {
                         id: 2,
                         name: "p2",
+                        url: '',
                         avatar: '',
                         dice: [1,4,4],
                         bid: [4, 1],
-                        current: false,
                         active: false
                     },
                 ]
             }
 
             // build div with players info
-            var $playersInfo = $('#players_info');            
-            for(var player in mockData.board){
-              var player = mockData.board[player];
+            var $playersInfo = $('#players_info');
+            for(var j in mockData.players){
+              var player = mockData.players[j];
 
               var $currentPlayerInfo = $('<div class="col-md-6"></div>');
 
@@ -70,39 +73,35 @@
               if (player.avatar !== ''){
                 $playerAvatarImg.attr({'src': player.avatar})
               } else {
-                $playerAvatarImg.attr({'src': '../../board/static/img/avatar-blank.jpg'})
+                $playerAvatarImg.attr({"src": '{% static "img/avatar-blank.jpg" %}', "style":"margin-bottom: 1em"})
               }
-              var $playerAvatar = $('<div class="col-md-3 col-xs-3 nopadding"></div>').append($playerAvatarImg);
+
+              var $playerAvatar = $('<div class="col-md-3 col-xs-3 nopadding" ></div>').append($playerAvatarImg);
 
               $playerID.append($playerAvatar);
               $playerID.append($playerName);
               $currentPlayerInfo.append($playerID);
 
-              // dice
-              // player's dice
               $('<div class="col-md-12 col-xs-12 badge badge-info">Player\'s dice</div>').appendTo($currentPlayerInfo);
               var $diceDiv = $('<div class="col-md-12 col-xs-12 "></div>');
 
               var dice = player.dice;
               for(var die in dice){
                 var die = dice[die];
-
-                var $dieImgs = $('<img class="scaled">')
-                  .attr({'src': '../../board/static/img/'+die+'k6.png'});
-
+                var $dieImgs = $('<img class="scaled">').attr({'src': '/static/img/'+die+'k6.png'});
                 $('<div class="col-md-2 col-xs-2  nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($diceDiv);
               }
               $currentPlayerInfo.append($diceDiv);
 
               // player's bid
-              $('<div class="col-md-12 col-xs-12  badge badge-info">Last bid</div>').appendTo($currentPlayerInfo);
+              $('<div class="col-md-12 col-xs-12 badge badge-info" style="margin-top:1em" >Last bid</div>').appendTo($currentPlayerInfo);
               var $bidDiceDiv = $('<div class="col-md-12 col-xs-12 " ></div>');
               var bid = player.bid;
               var quantity = dice[1];
               var diceValue = dice[2];
               for (var i=0; i<quantity; i++){
                 var $dieImgs = $('<img class="scaled">')
-                  .attr({'src': '../../board/static/img/'+diceValue+'k6.png'});
+                  .attr({'src': '/static/img/'+diceValue+'k6.png'});
 
                 $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
               }
@@ -111,23 +110,11 @@
               // finally add rest
               $playersInfo.append($currentPlayerInfo);
             }
-
-            // build list of platers
-            var $playersList = $('#playersList');
-            $playersList.append('<ul class="list-group"></ul>');
-            
-            for(var player in mockData.board){
-              var player = mockData.board[player];
-              var $listPlayer = $('<li class="list-group-item">'+player.name+'</li>');
-              if (player.current === true) $listPlayer.append('<span class="badge">C</span>');
-              if (player.active === false) $listPlayer.css({'opacity': 0.5})
-              $playersList.append($listPlayer);
-            }
+              var $messageBox = $('h1#messageText');
+              $messageBox.append(mockData.empty_board_state.message);
         }
 
-        setTimeout(function() {refreshGameState()}, 1000);
-    </script>
-
+        setTimeout(function() {refreshGameState()}, 1000);</script>
 </head>
 
 <body>
@@ -135,7 +122,7 @@
 <div class="container">
 
     <!-- Static navbar -->
-    <img src="../../../../assets/logo.jpg" class="img-responsive" alt="Responsive image">
+    <img src="{% static "img/logo.jpg" %}" class="img-responsive" alt="Responsive image">
     <div class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -145,43 +132,20 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Pyrate Dice</a>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Bueno</a></li>
-                    <li><a href="#">Mars</a></li>
-                    <li><a href="#">Snickers</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li class="divider"></li>
-                            <li class="dropdown-header">Nav header</li>
-                            <li><a href="#">Separated link</a></li>
-                            <li><a href="#">One more separated link</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="active"><a href="./">Default</a></li>
-                    <li><a href="../navbar-static-top/">Static top</a></li>
-                    <li><a href="../navbar-fixed-top/">Fixed top</a></li>
-                </ul>
-            </div><!--/.nav-collapse -->
+
+            <h1 id="messageText">
+
+            </h1>
         </div><!--/.container-fluid -->
     </div>
 
 
     <div class="row row-offcanvas row-offcanvas-right">
 
-        <div class="col-md-8" id="players_info"> </div>
+        <div class="col-md-12" id="players_info"> </div>
 
         <div role="navigation" class="col-md-4">
-        <div class="badge badge-info"><b>Players online</b></div>
-        <div  id="playersList"></div>
         </div><!--/span-->
     </div>
 
@@ -197,3 +161,4 @@
 <script src="bootstrap/js/ie10-viewport-bug-workaround.js"></script>
 </body>
 </html>
+
