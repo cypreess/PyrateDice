@@ -19,10 +19,9 @@
               }
 
                //moving frame
-              if (player.id == data.last_player){
-                  var $currentPlayerInfo = $('<div class="col-md-6" style="border:solid red"></div>');
-              } else{
-                  var $currentPlayerInfo = $('<div class="col-md-6"></div>');
+              var $currentPlayerInfo = $('<div class="col-md-6"></div>');
+              if (player.id === data.last_player){
+                 $currentPlayerInfo.css({'border':'solid red'});
               }
               console.log($currentPlayerInfo);
 
