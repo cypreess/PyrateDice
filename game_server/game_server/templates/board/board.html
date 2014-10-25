@@ -23,98 +23,8 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="{% static "js/jquery.min.js" %}"></script>
-    <script>
-        var refreshGameState = function(){
-//      $.ajax('trololo.com', {data: 'myname'}).done(function(data){
-//          console.debug(data);
-//      });
-            var mockData = {
-                "empty_board_state" : {
-                    "the_end": false,
-                    "message": "cypreess won!",
-                    "last_player": 1,
-                    "players": []
-                },
-                "players" : [
-                    {
-                        id: 1,
-                        name: "cypreess",
-                        url: '',
-                        avatar: '',
-                        dice: [1,2,3,4],
-                        bid: [2, 5],
-                        active: true
-                    },
-                    {
-                        id: 2,
-                        name: "p2",
-                        url: '',
-                        avatar: '',
-                        dice: [1,4,4],
-                        bid: [4, 1],
-                        active: false
-                    },
-                ]
-            }
-
-            // build div with players info
-            var $playersInfo = $('#players_info');
-            for(var j in mockData.players){
-              var player = mockData.players[j];
-
-              var $currentPlayerInfo = $('<div class="col-md-6"></div>');
-
-              // player avatar and name
-              var $playerID = $('<div class="col-md-12 col-xs-12 nopadding"></div>');
-              var $playerName = $('<div class="col-md-9 col-xs-9 " style="padding-top:5%"><b>' + player.name + '</b></div>');
-              // add avatar only if exists
-              var $playerAvatarImg = $('<img class="scaled">');
-              if (player.avatar !== ''){
-                $playerAvatarImg.attr({'src': player.avatar})
-              } else {
-                $playerAvatarImg.attr({"src": '{% static "img/avatar-blank.jpg" %}', "style":"margin-bottom: 1em"})
-              }
-
-              var $playerAvatar = $('<div class="col-md-3 col-xs-3 nopadding" ></div>').append($playerAvatarImg);
-
-              $playerID.append($playerAvatar);
-              $playerID.append($playerName);
-              $currentPlayerInfo.append($playerID);
-
-              $('<div class="col-md-12 col-xs-12 badge badge-info">Player\'s dice</div>').appendTo($currentPlayerInfo);
-              var $diceDiv = $('<div class="col-md-12 col-xs-12 "></div>');
-
-              var dice = player.dice;
-              for(var die in dice){
-                var die = dice[die];
-                var $dieImgs = $('<img class="scaled">').attr({'src': '/static/img/'+die+'k6.png'});
-                $('<div class="col-md-2 col-xs-2  nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($diceDiv);
-              }
-              $currentPlayerInfo.append($diceDiv);
-
-              // player's bid
-              $('<div class="col-md-12 col-xs-12 badge badge-info" style="margin-top:1em" >Last bid</div>').appendTo($currentPlayerInfo);
-              var $bidDiceDiv = $('<div class="col-md-12 col-xs-12 " ></div>');
-              var bid = player.bid;
-              var quantity = dice[1];
-              var diceValue = dice[2];
-              for (var i=0; i<quantity; i++){
-                var $dieImgs = $('<img class="scaled">')
-                  .attr({'src': '/static/img/'+diceValue+'k6.png'});
-
-                $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
-              }
-              $currentPlayerInfo.append($bidDiceDiv);
-
-              // finally add rest
-              $playersInfo.append($currentPlayerInfo);
-            }
-              var $messageBox = $('h1#messageText');
-              $messageBox.append(mockData.empty_board_state.message);
-        }
-
-        setTimeout(function() {refreshGameState()}, 1000);</script>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/gameStateRefresher.js' %}"></script>
 </head>
 
 <body>
@@ -122,7 +32,7 @@
 <div class="container">
 
     <!-- Static navbar -->
-    <img src="{% static "img/logo.jpg" %}" class="img-responsive" alt="Responsive image">
+    <img src="{% static 'img/logo.jpg' %}" class="img-responsive" alt="Responsive image">
     <div class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -156,9 +66,7 @@
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 
-<script src="bootstrap/js/bootstrap.min.js"></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="bootstrap/js/ie10-viewport-bug-workaround.js"></script>
+<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
 </body>
 </html>
 

@@ -30,8 +30,9 @@ def get_move(url, data):
 
     except ReadTimeout:
         raise GameError('Bid timeout')
-    except Exception, e:
-        raise GameError('Connection error: %s' % e)
+    except:
+        raise GameError('Connection error')
+
 
     try:
         response_json = json.loads(response.text)
@@ -48,23 +49,21 @@ def get_move(url, data):
 
 
 def check_move(count, die, gameplay, dice_count):
-
-    if (count == 0 and die == 0) and gameplay:
-        return
+    if count > dice_count:
+        raise GameError('Too high bid')
 
     if not ((count == 0 and die == 0) or (count > 0 and die >= 1 and die <= 6)):
         raise GameError('Bid must be (0, 0) or ( >0 , 1..6 )')
 
-    if count == 0 and die == 0 and len(gameplay) == 0:
-        raise GameError('Cannot call as the first player')
+    if not gameplay or (gameplay[-1][2] == 0 and gameplay[-1][3] == 0):
+        # This is first game, or first game after CAL
+        if count == 0 and die == 0:
+            raise GameError('Cannot call as the first player after start or call')
 
-    if count > dice_count:
-        raise GameError('Too high bid')
-
-    if gameplay:
+    else:
         player_id, player_name, last_count, last_die = gameplay[-1]
         if not (count > last_count or (count == last_count and die > last_die)):
-            raise GameError('Bid is lower than last bid=(%d, %d)' % (last_count, last_die))
+            raise GameError('Bid (%d, %d) is lower than last bid=(%d, %d)' % (count, die, last_count, last_die))
 
 
 @shared_task
@@ -134,7 +133,9 @@ def board_iteration(iteration):
             user_data['id'] = player_id
 
             count, die = get_move(player_url + '/bid', json.dumps(user_data))
+
             logger.warning("Player %s sends %d , %d" %(player_name, count, die))
+
             check_move(count, die, state_data['gameplay'], sum([len(x['dice']) for x in board_data['players'] if x['active']]))
 
             if count == 0 and die == 0:
@@ -145,6 +146,8 @@ def board_iteration(iteration):
                 for player_dice in board_data['players']:
                     dice_count_list += player_dice
                 dice_count = len([d for d in dice_count_list if d == last_die])
+
+
                 if dice_count >= last_count:
                     # User call - success
                     logger.warning("Player %s calls and WIN" % player_name)
@@ -155,7 +158,7 @@ def board_iteration(iteration):
                         board_data['players'][last_player_id]['active'] = False
                     else:
                         # Last player takes one die
-                        state_data['players'][last_player_id]['dice'] + 1
+                        state_data['players'][last_player_id]['dice'] += 1
 
 
 
@@ -169,7 +172,7 @@ def board_iteration(iteration):
                         board_data['players'][player_id]['active'] = False
                     else:
                         # Player takes one die
-                        state_data['players'][player_id]['dice'] + 1
+                        state_data['players'][player_id]['dice'] += 1
 
 
                 board_data['last_player'] = None
@@ -192,7 +195,11 @@ def board_iteration(iteration):
         except GameError, e:
             # Player errors
             logger.error("Player ID=%d [%s] (%s) - GAME ERROR - %s" % (player_id, player_name, player_url, e))
-            requests.get(player_url + '/error', params={'message': str(e)}, timeout=0.5)
+
+            try:
+                requests.get(player_url + '/error', params={'message': str(e)}, timeout=0.5)
+            except:
+                pass
 
             board_data['last_player'] = player_id
             board_data['players'][player_id]['active'] = False

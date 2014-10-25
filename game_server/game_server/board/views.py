@@ -67,7 +67,7 @@ def board(request, *args, **kwargs):
     return render_to_response('board/board.html')
 
 
-@login_required()
+# @login_required()
 def board_json(request, pk):
     object = get_object_or_404(BoardState.objects.filter(iteration=pk))
     return HttpResponse(json.dumps(object.board_data))
