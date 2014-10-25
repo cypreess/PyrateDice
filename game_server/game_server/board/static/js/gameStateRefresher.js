@@ -12,7 +12,19 @@
           //console.debug(data['players']);
           for(var j in data.players){
               var player = data.players[j];
-              var $currentPlayerInfo = $('<div class="col-md-6"></div>');
+
+              //skip players that were banned
+              if (player.active == false){
+                  continue;
+              }
+
+               //moving frame
+              if (player.id == data.last_player){
+                  var $currentPlayerInfo = $('<div class="col-md-6" style="border:solid red"></div>');
+              } else{
+                  var $currentPlayerInfo = $('<div class="col-md-6"></div>');
+              }
+              console.log($currentPlayerInfo);
 
               // player avatar and name
               var $playerID = $('<div class="col-md-12 col-xs-12 nopadding"></div>');
