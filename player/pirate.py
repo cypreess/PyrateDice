@@ -22,12 +22,8 @@ class Pirate(object):
         return json.dumps(self.do_bid(data))
 
     def do_bid(self, data):
-<<<<<<< HEAD:player/python_player.py
         raise NotImplementedError()
-=======
-        print data
-        return 1, 2
->>>>>>> c60f4023be5c077feaa56017cb335c7e2d6c32a2:player/pirate_player.py
+
 
     def get_argparser(self):
         parser = argparse.ArgumentParser(description='Runs yours pirate.')
