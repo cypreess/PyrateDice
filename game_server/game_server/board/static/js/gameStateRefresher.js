@@ -68,4 +68,4 @@
       });
     }
 
-    setInterval(function() {refreshGameState()}, 2000);
+    setInterval(function() {refreshGameState()}, 4000);
