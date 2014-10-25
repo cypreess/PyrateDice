@@ -28,18 +28,6 @@
 # cURL
 # curl http://0.0.0.0:8000/bid -X POST -H "Content-Type: application/json" -d @data.json -w "\n"
 
-# Get your bot name here
-# http://www.piratequiz.com/
-
-# Dirty Harry Rackham
-#
-# You're the pirate everyone else wants to throw
-# in the ocean -- not to get rid of you, you understand;
-# just to get rid of the smell. You have the good fortune
-# of having a good name, since Rackham (pronounced RACKem,
-# not rack-ham) is one of the coolest sounding surnames
-# for a pirate. Arr!
-
 from pirate import Pirate
 import random
 import json
@@ -47,7 +35,7 @@ import json
 def debug(message, data=None):
     print "DEBUG " + message + ": " + str(data)
 
-class DirtyHarryRackham(Pirate):
+class Barbarossa(Pirate):
     def do_bid(self, data):
         debug('input', data)
 
@@ -76,7 +64,13 @@ class DirtyHarryRackham(Pirate):
             return call
         else:
             bid_count, bid_dice = last_bid
-            next_bid = [ bid_count+1, bid_dice ]
+            next_bid_count = bid_count+1
+            if next_bid_count >= dice_count:
+                call = [0,0]
+                debug('returning', call)
+                return call
+
+            next_bid = [ next_bid_count, bid_dice ]
             debug('returning', next_bid)
             return next_bid
 
@@ -98,4 +92,4 @@ class DirtyHarryRackham(Pirate):
 
 
 if __name__ == '__main__':
-    DirtyHarryRackham().run()
+    Barbarossa().run()

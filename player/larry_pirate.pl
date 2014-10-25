@@ -13,6 +13,10 @@ set 'show_errors'  => 1;
 set 'startup_info' => 1;
 set 'warnings'     => 1;
 
+get '/ping' => sub {
+    return "pong\n";
+};
+
 post '/bid' => sub {
     debug "--- NEW BID ---";
     my $data = from_json(request->body);
@@ -52,8 +56,18 @@ post '/bid' => sub {
     debug "tolerance: $tolerance";
     debug "max_bid_count: $max_bid_count";
 
-    # Call
+    # Make a call
     if ($last_bid_count >= $max_bid_count) {
+        my $call = [ 0,0 ];
+        debug "Returning " . join(', ', @$call);
+        return to_json($call);
+    }
+
+    my $next_bid_count = $last_bid_count+1;
+    debug "next_bid_count: $next_bid_count";
+
+    # Make a call
+    if ($next_bid_count >= $players_dice_count) {
         my $call = [ 0,0 ];
         debug "Returning " . join(', ', @$call);
         return to_json($call);
@@ -62,7 +76,7 @@ post '/bid' => sub {
     my $next_bid_dice = @$gameplay % 2 ? max(@$dice) : $last_bid_dice;
     debug "next_bid_dice: $next_bid_dice";
 
-    my $bid = [ $last_bid_count+1, $next_bid_dice ];
+    my $bid = [ $next_bid_count, $next_bid_dice ];
     debug "Returning " . join(', ', @$bid);
 
     return to_json($bid);
