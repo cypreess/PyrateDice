@@ -50,20 +50,28 @@ def get_move(url, data):
 
 def check_move(count, die, gameplay, dice_count):
     if count > dice_count:
-        raise GameError('Too high bid')
+        raise GameError('Bid too high')
 
-    if not ((count == 0 and die == 0) or (count > 0 and die >= 1 and die <= 6)):
-        raise GameError('Bid must be (0, 0) or ( >0 , 1..6 )')
-
-    if not gameplay or (gameplay[-1][2] == 0 and gameplay[-1][3] == 0):
-        # This is first game, or first game after CAL
-        if count == 0 and die == 0:
+    if (count == 0 and die == 0):
+        if not gameplay:
             raise GameError('Cannot call as the first player after start or call')
 
-    else:
+        if gameplay[-1][2] == 0 and gameplay[-1][3] == 0:
+            raise GameError('Cannot call as the first player after start or call')
+        return
+
+    if count <= 0 or die < 1 or die > 6:
+        raise GameError('Bid must be (0, 0) or ( >0 , 1..6 )')
+
+    if gameplay:
         player_id, player_name, last_count, last_die = gameplay[-1]
-        if not (count > last_count or (count == last_count and die > last_die)):
+        # if not (count > last_count or (count == last_count and die > last_die)):
+        if count < last_count:
             raise GameError('Bid (%d, %d) is lower than last bid=(%d, %d)' % (count, die, last_count, last_die))
+
+        if count == last_count and die <= last_die:
+            raise GameError('Bid (%d, %d) is lower than last bid=(%d, %d)' % (count, die, last_count, last_die))
+
 
 
 @shared_task
@@ -91,16 +99,14 @@ def board_iteration(iteration):
             # initialize new dice for new game
 
             for player in state_data['players']:
+                board_data['players'][player['id']]['dice'] = []
+                board_data['players'][player['id']]['bid'] = []
                 if board_data['players'][player['id']]['active']:
-                    board_data['players'][player['id']]['dice'] = []
                     for i in range(player['dice']):
-                        board_data['players'][player['id']]['dice'].append(randrange(1, 6))
-                else:
-                    board_data['players'][player['id']]['dice'] = []
-
+                        board_data['players'][player['id']]['dice'].append(randrange(1, 7))
         else:
-            players_queue = cycle(board_data[u'players'])
-            for i in xrange(board_data[u'last_player']+1):
+            players_queue = cycle(board_data['players'])
+            for i in xrange(board_data['last_player'] + 1):
                 players_queue.next()
 
             for player_candidate in players_queue:
@@ -114,7 +120,7 @@ def board_iteration(iteration):
         player_name = board_data[u'players'][next_player]['name']
         player_url = board_data[u'players'][next_player]['url'].rstrip('/')
 
-        if len(filter(lambda x: x['active'],  board_data[u'players'])) <= 1:
+        if len(filter(lambda x: x['active'], board_data[u'players'])) <= 1:
             # no more players
             logger.warning("GAME END - player %s wins" % player_name)
             board_data['the_end'] = True
@@ -143,12 +149,18 @@ def board_iteration(iteration):
                 # Player calls
                 logger.warning("Player ID=%d [%s] (%s) - CALL" % (player_id, player_name, player_url))
                 dice_count_list = []
-                for player_dice in board_data['players']:
-                    dice_count_list += player_dice
+
+                for player in board_data['players']:
+                    if player['active']:
+                        dice_count_list += player['dice']
+
+                print "DICELIST=%s" % dice_count_list
+                print "LAST_DICE=%d" % last_die
                 dice_count = len([d for d in dice_count_list if d == last_die])
 
+                print "LAST=%s DICE_COUNT=%d" %(state_data['gameplay'][-1], dice_count)
 
-                if dice_count >= last_count:
+                if dice_count < last_count:
                     # User call - success
                     logger.warning("Player %s calls and WIN" % player_name)
                     board_data['message'] = "Player %s calls and WIN" % player_name
@@ -176,7 +188,7 @@ def board_iteration(iteration):
 
 
                 board_data['last_player'] = None
-                state_data['gameplay'].append([player_id, player_name, last_count, last_die])
+                state_data['gameplay'].append([player_id, player_name, count, die])
                 BoardState.objects.create(iteration=iteration, board_data=board_data, state_data=state_data)
 
 
