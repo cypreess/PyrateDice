@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from board.models import UserProfile, BoardStates
+from board.models import UserProfile, BoardState
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -10,6 +10,6 @@ class UserProfileAdmin(admin.ModelAdmin):
 admin.site.register(UserProfile, UserProfileAdmin)
 
 
-class BoardStatesAdmin(admin.ModelAdmin):
+class BoardStateAdmin(admin.ModelAdmin):
     list_display = ('iteration', )
-admin.site.register(BoardStates, BoardStatesAdmin)
+admin.site.register(BoardState, BoardStateAdmin)

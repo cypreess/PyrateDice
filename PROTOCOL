@@ -1,10 +1,6 @@
 {
-	"results" : {
-		"new_die" : "player_name", # ""
-		"player_lose" : "player_name", # or ""
-		"player_win": "player_name", # ""
-	},
-	"board" : [
+	"message" : "",
+	"players" : [
 		{
 			id: 1,
 			name: "cypreess",

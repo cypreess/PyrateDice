@@ -1,4 +1,4 @@
-from random import shuffle
+from random import shuffle, randrange
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -10,8 +10,9 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.views.generic import UpdateView
 import requests
-from board.models import UserProfile, BoardStates
+from board.models import UserProfile, BoardState
 from board.tasks import board_iteration
+
 
 @login_required()
 def secret_page(request, *args, **kwargs):
@@ -23,42 +24,39 @@ def start_game(request, *args, **kwargs):
     if not request.user.is_superuser:
         return HttpResponse('You should be admin to display this page')
 
-    BoardStates.objects.all().delete()
+    BoardState.objects.all().delete()
 
     empty_board_state = {
-        "results": {
-            "new_die": "",
-            "player_lose": "",
-            "player_win": "",
-        },
-        "board": []
+        "message": "",
+        "last_player": None,
+        "players": []
     }
 
-    gamers = []
+    players = []
     for user_profile in UserProfile.active_gamers.all():
-        gamers.append({
+        players.append({
             "name": user_profile.user.username,
+            "url": user_profile.url,
             "avatar": "",
-            "dice": [],
+            "dice": [randrange(1, 6)],
             "bid": [],
             "current": False,
             "active": True,
         })
 
-    shuffle(gamers)
-    for i, gamer in enumerate(gamers, 1):
+    shuffle(players)
+    for i, gamer in enumerate(players):
         gamer['id'] = i
-    empty_board_state['board'] = gamers
+    empty_board_state['players'] = players
 
     empy_state_data = {
         'gameplay': [],
         'players': []
     }
-    for user in gamers:
+    for user in players:
         empy_state_data['players'].append({'id': user['id'], 'name': user['name'], 'dice': 1})
 
-
-    BoardStates.objects.create(iteration=0, board_data=empty_board_state, state_data=empy_state_data)
+    BoardState.objects.create(iteration=0, board_data=empty_board_state, state_data=empy_state_data)
     board_iteration.delay(iteration=1)
     return HttpResponse('Start new')
 

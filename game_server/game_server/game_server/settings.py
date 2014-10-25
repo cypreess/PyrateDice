@@ -14,6 +14,12 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
+MAX_GAME_ITERATION = 50
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -42,6 +48,7 @@ INSTALLED_APPS = (
     'board',
     'registration',
     'djcelery',
+    'django_extensions',
 )
 
 TEMPLATE_DIRS = (
