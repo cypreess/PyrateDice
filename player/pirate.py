@@ -22,6 +22,9 @@ class Pirate(object):
         return json.dumps(self.do_bid(data))
 
     def do_bid(self, data):
+        # Example input: {"players": [{"id": 0, "dice": 1, "name": "Player2"}, {"id": 2, "dice": 1, "name": "Player1"}], "gameplay": [[0, "Player2", 1, 2]], "dice": [3], "id": 2}
+        #
+
         raise NotImplementedError()
 
 

@@ -1,3 +1,4 @@
+import json
 from random import shuffle, randrange
 
 from django.contrib import messages
@@ -69,7 +70,7 @@ def board(request, *args, **kwargs):
 @login_required()
 def board_json(request, pk):
     object = get_object_or_404(BoardState.objects.filter(iteration=pk))
-    return HttpResponse(str(object.board_data))
+    return HttpResponse(json.dumps(object.board_data))
 
 
 

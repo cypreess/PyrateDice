@@ -26,7 +26,8 @@ def get_move(url, data):
     message = None
 
     try:
-        response = requests.post(url, data=data, timeout=1)
+        response = requests.post(url, data=data, timeout=1, headers={'content-type': 'application/json'})
+
     except ReadTimeout:
         raise GameError('Bid timeout')
     except Exception, e:
@@ -47,8 +48,13 @@ def get_move(url, data):
 
 
 def check_move(count, die, gameplay, dice_count):
+
+    if (count == 0 and die == 0) and gameplay:
+        return
+
     if not ((count == 0 and die == 0) or (count > 0 and die >= 1 and die <= 6)):
         raise GameError('Bid must be (0, 0) or ( >0 , 1..6 )')
+
     if count == 0 and die == 0 and len(gameplay) == 0:
         raise GameError('Cannot call as the first player')
 
@@ -127,13 +133,12 @@ def board_iteration(iteration):
             user_data['dice'] = board_data['players'][player_id]['dice']
             user_data['id'] = player_id
 
-            count, die = get_move(player_url + '/bid', {'data': json.dumps(user_data)})
+            count, die = get_move(player_url + '/bid', json.dumps(user_data))
+            logger.warning("Player %s sends %d , %d" %(player_name, count, die))
             check_move(count, die, state_data['gameplay'], sum([len(x['dice']) for x in board_data['players'] if x['active']]))
 
             if count == 0 and die == 0:
                 last_player_id, last_player_name, last_count, last_die = state_data['gameplay'][-1]
-
-
                 # Player calls
                 logger.warning("Player ID=%d [%s] (%s) - CALL" % (player_id, player_name, player_url))
                 dice_count_list = []
@@ -145,30 +150,30 @@ def board_iteration(iteration):
                     logger.warning("Player %s calls and WIN" % player_name)
                     board_data['message'] = "Player %s calls and WIN" % player_name
 
-                    if len(board_data['players']['last_player_id']['dice']) >= MAX_DICE:
+                    if len(board_data['players'][last_player_id]['dice']) >= MAX_DICE:
                         # Last player looses
-                        board_data['players']['last_player_id']['active'] = False
+                        board_data['players'][last_player_id]['active'] = False
                     else:
                         # Last player takes one die
-                        state_data['players']['last_player_id']['dice'] + 1
+                        state_data['players'][last_player_id]['dice'] + 1
 
 
 
                 else:
                     # User failed
-                    logger.warning("Player %s calls and LOOSE" % player_name)
-                    board_data['message'] = "Player %s calls and LOOSE" % player_name
+                    logger.warning("Player %s calls and LOSE" % player_name)
+                    board_data['message'] = "Player %s calls and LOSE" % player_name
 
-                    if len(board_data['players']['player_id']['dice']) >= MAX_DICE:
+                    if len(board_data['players'][player_id]['dice']) >= MAX_DICE:
                         # Player looses
-                        board_data['players']['player_id']['active'] = False
+                        board_data['players'][player_id]['active'] = False
                     else:
                         # Player takes one die
-                        state_data['players']['player_id']['dice'] + 1
+                        state_data['players'][player_id]['dice'] + 1
 
 
                 board_data['last_player'] = None
-                state_data['gameplay'].append(player_id, player_name, last_count, last_die)
+                state_data['gameplay'].append([player_id, player_name, last_count, last_die])
                 BoardState.objects.create(iteration=iteration, board_data=board_data, state_data=state_data)
 
 
@@ -180,8 +185,9 @@ def board_iteration(iteration):
                 logger.warning(
                     "Player ID=%d [%s] (%s) - BID - %d, %d" % (player_id, player_name, player_url, count, die))
 
-            board_data['last_player'] = player_id
-            BoardState.objects.create(iteration=iteration, board_data=board_data, state_data=state_data)
+                board_data['last_player'] = player_id
+                BoardState.objects.create(iteration=iteration, board_data=board_data, state_data=state_data)
+
 
         except GameError, e:
             # Player errors
