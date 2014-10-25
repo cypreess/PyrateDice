@@ -1,15 +1,15 @@
    var iterationNumber = 0;
     var refreshGameState = function(){
-      $.ajax('http://127.0.0.1:8000/board_state/' + iterationNumber, {data: 'myname'}).done(function(data){
-          console.debug(data);
+      $.ajax('http://127.0.0.1:8000/board_state/' + iterationNumber + '/').done(function(data){
+          //console.debug(data);
           iterationNumber++;
 
           data = $.parseJSON(data);
-          console.debug(data)
+          //console.debug(data)
 
           // build div with players info
           var $playersInfo = $('#players_info').empty();
-          console.debug(data['players'])
+          //console.debug(data['players']);
           for(var j in data.players){
               var player = data.players[j];
               var $currentPlayerInfo = $('<div class="col-md-6"></div>');
@@ -46,16 +46,20 @@
               $('<div class="col-md-12 col-xs-12 badge badge-info" style="margin-top:1em" >Last bid</div>').appendTo($currentPlayerInfo);
               var $bidDiceDiv = $('<div class="col-md-12 col-xs-12 " ></div>');
               var bid = player.bid;
-              var quantity = dice[1];
-              var diceValue = dice[2];
-              for (var i=0; i<quantity; i++){
-                  var $dieImgs = $('<img class="scaled">')
-                          .attr({'src': '/static/img/'+diceValue+'k6.png'});
 
-                  $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
+
+              if (bid.length == 2) {
+                  var quantity = bid[0];
+                  var diceValue = bid[1];
+
+                  for (var i = 0; i < quantity; i++) {
+                      var $dieImgs = $('<img class="scaled">')
+                          .attr({'src': '/static/img/' + diceValue + 'k6.png'});
+
+                      $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
+                  }
+                  $currentPlayerInfo.append($bidDiceDiv);
               }
-              $currentPlayerInfo.append($bidDiceDiv);
-
               // finally add rest
               $playersInfo.append($currentPlayerInfo);
           }
@@ -64,4 +68,4 @@
       });
     }
 
-    setInterval(function() {refreshGameState()}, 1000);
+    setInterval(function() {refreshGameState()}, 2000);
