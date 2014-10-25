@@ -52,6 +52,8 @@ post '/bid' => sub {
     debug "last_bid_count: $last_bid_count";
     debug "last_bid_dice: $last_bid_dice";
 
+    $last_bid_dice = $last_bid_dice || max(@$dice);
+
     my @tolerance_map = (-2, -1, 0, 1, 2, 3, 4);
     my $tolerance = $tolerance_map[rand @tolerance_map];
     my $max_bid_count = $players_dice_count/$players_count + $tolerance;
