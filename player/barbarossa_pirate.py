@@ -37,41 +37,58 @@ def debug(message, data=None):
 
 class Barbarossa(Pirate):
     def do_bid(self, data):
-        debug('input', data)
+        # debug('input', data)
+        debug('--- NEW BID ---')
 
         players = data['players']
         gameplay = data['gameplay']
         dice = data['dice']
+        debug('dice', dice)
+
+        dice_count = len(dice)
+
+        new_game = False
 
         try:
             last_bid = gameplay[-1][2:4]
+            bid_count, bid_dice = last_bid
         except IndexError:
-            dice_count = len(dice)
+            new_game = True
+
+        if new_game or bid_dice == 0:
             for player in players:
+                debug('player dice', player['dice'])
                 dice_count += player['dice']
 
             bluff = self.start_game_with_bluff(dice, dice_count)
-            debug('returning', bluff)
+            debug('bluff return', bluff)
 
             return bluff
 
         players_count = len(players)
 
+        tolerance_list = [ 4,5,6,7,8 ]
+        tolerance = random.choice(tolerance_list)
+
         iteration = len(data['gameplay'])
-        if iteration > players_count/2:
+        if iteration > players_count/2 + tolerance:
             call = [0,0]
-            debug('returning', call)
+            debug('iteration call', call)
+            debug('iteration (is >)', iteration)
+            debug('players_count (divide by 2)', players_count)
+            debug('tolerance (add to players_count)', tolerance)
             return call
         else:
-            bid_count, bid_dice = last_bid
             next_bid_count = bid_count+1
             if next_bid_count >= dice_count:
                 call = [0,0]
-                debug('returning', call)
+                debug('edge call', call)
+                debug('next_bid_count (is >)', next_bid_count)
+                debug('dice_count', dice_count)
                 return call
 
             next_bid = [ next_bid_count, bid_dice ]
-            debug('returning', next_bid)
+            debug('bid return', next_bid)
             return next_bid
 
     def start_game_with_bluff(self, dice, dice_count):
