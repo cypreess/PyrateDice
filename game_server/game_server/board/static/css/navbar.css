@@ -4,7 +4,9 @@ body {
 }
 
 .navbar {
-  margin-bottom: 20px;
+  /*margin-bottom: 20px;*/
+  margin-top: 20px;
+
 }
 
 img.scaled{
@@ -15,4 +17,18 @@ img.scaled{
 .nopadding {
    padding: 0 !important;
    margin: 0 !important;
+}
+
+.dice{
+  margin-bottom: 10px;
+
+}
+
+.avatar{
+    margin-top: 20px;
+}
+h1#messageText{
+    padding: 10px;
+    margin: 0px;
+    color: #333;
 }

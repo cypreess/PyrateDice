@@ -16,10 +16,12 @@
               //moving frame{
               var $currentPlayerInfo = $('<div class="col-md-6"></div>');
              $currentPlayerInfo.css({'border':'solid 2px transparent'});
+              var extra_class = '';
               if (player.id === data.last_player){
-                 $currentPlayerInfo.css({'border-color':'red'});
+                  extra_class = 'alert-danger';
+//                 $currentPlayerInfo.css({'background-color:':'red', 'border-color': 'white'});
               } else {
-                  $currentPlayerInfo.css({'border-color':'transparent'});
+//                  $currentPlayerInfo.css({'background-color:':'white', 'border-color':'white'});
               }
 
               //skip player only if was not banned in the last round
@@ -31,12 +33,12 @@
               var $playerID = $('<div class="col-md-12 col-xs-12 nopadding"></div>');
               var $playerName = $('<div class="col-md-9 col-xs-9 " style="padding-top:5%"><b>' + player.name + '</b></div>');
               // add avatar only if exists
-              var $playerAvatarImg = $('<img class="scaled">');
-              if (player.avatar !== ''){
-                  $playerAvatarImg.attr({'src': player.avatar})
-              } else {
-                  $playerAvatarImg.attr({"src": '/static/img/avatar-blank.jpg', "style":"margin-bottom: 1em"})
-              }
+              var $playerAvatarImg = $('<img class="scaled avatar">');
+//              if (player.avatar !== ''){
+//                  $playerAvatarImg.attr({'src': player.avatar})
+//              } else {
+                  $playerAvatarImg.attr({"src": '/static/img/avatar-'+ player.name.toLowerCase() +'.png', "style":"margin-bottom: 1em"})
+//              }
 
               var $playerAvatar = $('<div class="col-md-3 col-xs-3 nopadding" ></div>').append($playerAvatarImg);
 
@@ -44,7 +46,7 @@
               $playerID.append($playerName);
               $currentPlayerInfo.append($playerID);
 
-              $('<div class="col-md-12 col-xs-12 badge badge-info">Player\'s dice</div>').appendTo($currentPlayerInfo);
+              $('<div class="dice col-md-12 col-xs-12 badge badge-info '+ extra_class + '">Player\'s dice</div>').appendTo($currentPlayerInfo);
               var $diceDiv = $('<div class="col-md-12 col-xs-12 "></div>');
 
               var dice = player.dice;
@@ -56,7 +58,7 @@
               $currentPlayerInfo.append($diceDiv);
 
               // player's bid
-              $('<div class="col-md-12 col-xs-12 badge badge-info" style="margin-top:1em" >Last bid</div>').appendTo($currentPlayerInfo);
+              $('<div class="dice col-md-12 col-xs-12 badge badge-info '+ extra_class+'" style="margin-top:1em" >Last bid</div>').appendTo($currentPlayerInfo);
               var $bidDiceDiv = $('<div class="col-md-12 col-xs-12 " ></div>');
               var bid = player.bid;
 
