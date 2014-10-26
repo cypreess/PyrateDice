@@ -107,10 +107,13 @@ def board_iteration(iteration):
 
         players_queue = cycle(board_data['players'])
         for i in xrange(board_data['last_player'] + 1):
-            players_queue.next()
+            p = players_queue.next()
+            print "SKIP_PLAYER_QUEUE %s" % p
 
         for player_candidate in players_queue:
+            print "PLAYER CANDIDATE %s" % player_candidate
             if player_candidate['active']:
+                print "CHOOSE PLAYER %s" % player_candidate
                 next_player = player_candidate['id']
                 break
 
@@ -124,7 +127,7 @@ def board_iteration(iteration):
             # no more players
             logger.warning("GAME END - player %s wins" % player_name)
             board_data['the_end'] = True
-            board_data['message'] = "Player %s WINS!" % player_name
+            board_data['message'] = "%s WINS!" % player_name
             board_data['last_player'] = player_id
             BoardState.objects.create(iteration=iteration, board_data=board_data, state_data=state_data)
             return
@@ -163,8 +166,8 @@ def board_iteration(iteration):
 
                 if dice_count < last_count:
                     # User call - success
-                    logger.warning("Player %s calls and WIN" % player_name)
-                    board_data['message'] = "Player %s calls and WIN" % player_name
+                    logger.warning("%s calls %s. %s WIN" % (player_name, last_player_name, player_name))
+                    board_data['message'] = "%s calls %s. %s WIN!" % (player_name, last_player_name, player_name)
 
                     if len(board_data['players'][last_player_id]['dice']) >= MAX_DICE:
                         # Last player looses
@@ -177,8 +180,8 @@ def board_iteration(iteration):
 
                 else:
                     # User failed
-                    logger.warning("Player %s calls and LOSE" % player_name)
-                    board_data['message'] = "Player %s calls and LOSE" % player_name
+                    logger.warning("%s calls %s. %s LOSE" % (player_name, last_player_name, player_name))
+                    board_data['message'] = "%s calls %s. %s LOSE!" % (player_name, last_player_name, player_name)
 
                     if len(board_data['players'][player_id]['dice']) >= MAX_DICE:
                         # Player looses
@@ -196,6 +199,8 @@ def board_iteration(iteration):
 
 
             else:
+                board_data['message'] = "%s bids (%d x %d)" % (player_name, count, die)
+
                 # Player bids
                 board_data['players'][player_id]['bid'] = [count, die]
                 state_data['gameplay'].append([player_id, player_name, count, die])
@@ -217,7 +222,7 @@ def board_iteration(iteration):
 
             board_data['last_player'] = player_id
             board_data['players'][player_id]['active'] = False
-            board_data['message'] = 'Player %s has been disqualified' % player_name
+            board_data['message'] = '%s has been disqualified' % player_name
             BoardState.objects.create(iteration=iteration, board_data=board_data, state_data=state_data)
 
 

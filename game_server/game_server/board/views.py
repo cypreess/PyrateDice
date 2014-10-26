@@ -30,7 +30,7 @@ def start_game(request, *args, **kwargs):
     empty_board_state = {
         "the_end": False,
         "message": "",
-        "last_player": 0,
+        #"last_player": 0,
         "reset": True,
         "players": []
     }
@@ -57,6 +57,8 @@ def start_game(request, *args, **kwargs):
     }
     for user in players:
         empy_state_data['players'].append({'id': user['id'], 'name': user['name'], 'dice': 1})
+
+    empty_board_state['last_player'] = len(empy_state_data['players']) - 1
 
     BoardState.objects.create(iteration=0, board_data=empty_board_state, state_data=empy_state_data)
     board_iteration.delay(iteration=1)
