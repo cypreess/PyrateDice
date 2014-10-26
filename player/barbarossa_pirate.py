@@ -28,12 +28,14 @@
 # cURL
 # curl http://0.0.0.0:8000/bid -X POST -H "Content-Type: application/json" -d @data.json -w "\n"
 
-from pirate import Pirate
 import random
-import json
+
+from pirate import Pirate
+
 
 def debug(message, data=None):
     print "DEBUG " + message + ": " + str(data)
+
 
 class Barbarossa(Pirate):
     def do_bid(self, data):
@@ -67,45 +69,45 @@ class Barbarossa(Pirate):
 
         players_count = len(players)
 
-        tolerance_list = [ 4,5,6,7,8 ]
+        tolerance_list = [4, 5, 6, 7, 8]
         tolerance = random.choice(tolerance_list)
 
         iteration = len(data['gameplay'])
-        if iteration > players_count/2 + tolerance:
-            call = [0,0]
+        if iteration > players_count / 2 + tolerance:
+            call = [0, 0]
             debug('iteration call', call)
             debug('iteration (is >)', iteration)
             debug('players_count (divide by 2)', players_count)
             debug('tolerance (add to players_count)', tolerance)
             return call
         else:
-            next_bid_count = bid_count+1
+            next_bid_count = bid_count + 1
             if next_bid_count >= dice_count:
-                call = [0,0]
+                call = [0, 0]
                 debug('edge call', call)
                 debug('next_bid_count (is >)', next_bid_count)
                 debug('dice_count', dice_count)
                 return call
 
-            next_bid = [ next_bid_count, bid_dice ]
+            next_bid = [next_bid_count, bid_dice]
             debug('bid return', next_bid)
             return next_bid
 
     def start_game_with_bluff(self, dice, dice_count):
         start_amount = 1
-        end_amount = dice_count/2+1
+        end_amount = dice_count / 2 + 1
 
-        start_dice_amount_possibilities = range(start_amount, end_amount+1)
+        start_dice_amount_possibilities = range(start_amount, end_amount + 1)
         debug('start_dice_amount_possibilities', start_dice_amount_possibilities)
 
         dice_amount = random.choice(start_dice_amount_possibilities)
         debug('dice_amount', dice_amount)
 
-        dice_possibilities = range(1,7)
+        dice_possibilities = range(1, 7)
         bluff_dice = random.choice(dice_possibilities)
         debug('bluff_dice', bluff_dice)
 
-        return [ dice_amount, bluff_dice ]
+        return [dice_amount, bluff_dice]
 
 
 if __name__ == '__main__':
