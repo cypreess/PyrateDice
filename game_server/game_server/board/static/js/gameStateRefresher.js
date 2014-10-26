@@ -15,8 +15,11 @@
 
               //moving frame{
               var $currentPlayerInfo = $('<div class="col-md-6"></div>');
+             $currentPlayerInfo.css({'border':'solid 2px transparent'});
               if (player.id === data.last_player){
-                 $currentPlayerInfo.css({'border':'solid red'});
+                 $currentPlayerInfo.css({'border-color':'red'});
+              } else {
+                  $currentPlayerInfo.css({'border-color':'transparent'});
               }
 
               //skip player only if was not banned in the last round
@@ -61,20 +64,31 @@
               if (bid.length == 2) {
                   var quantity = bid[0];
                   var diceValue = bid[1];
-
                   for (var i = 0; i < quantity; i++) {
                       var $dieImgs = $('<img class="scaled">')
                           .attr({'src': '/static/img/' + diceValue + 'k6.png'});
 
                       $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
                   }
-                  $currentPlayerInfo.append($bidDiceDiv);
+
+                  //put empty block if somebody is calling
+                  if (quantity ==0 && diceValue == 0){
+                    var $dieImgs = $('<img class="scaled">')
+                   .attr({'src': '/static/img/empty_image.png'});
+                   $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
+                  }
+              } else{
+                  // no bid, but we want an empty block to keep the layout
+                   var $dieImgs = $('<img class="scaled">')
+                   .attr({'src': '/static/img/empty_image.png'});
+                   $('<div class="col-md-2 col-xs-2 nopadding" style="overflow:hidden"></div>').append($dieImgs).appendTo($bidDiceDiv);
               }
+              $currentPlayerInfo.append($bidDiceDiv);
               // finally add rest
               $playersInfo.append($currentPlayerInfo);
           }
           var $messageBox = $('h1#messageText');
-          $messageBox.html(data.message);
+          $messageBox.html("&nbsp;"+data.message);
 
           if (data.the_end == true) iterationNumber=-1;
       });
