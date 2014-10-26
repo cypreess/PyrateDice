@@ -94,4 +94,4 @@
       });
     }
 
-    setInterval(function() { if (iterationNumber ==-1){ return;}refreshGameState()}, 1000);
+    setInterval(function() { if (iterationNumber ==-1){ return;}refreshGameState()}, 3000);
