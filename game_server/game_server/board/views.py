@@ -4,7 +4,7 @@ from random import shuffle, randrange
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 
 # Create your views here.
@@ -30,7 +30,8 @@ def start_game(request, *args, **kwargs):
     empty_board_state = {
         "the_end": False,
         "message": "",
-        "last_player": None,
+        "last_player": 0,
+        "reset": True,
         "players": []
     }
 
@@ -59,7 +60,7 @@ def start_game(request, *args, **kwargs):
 
     BoardState.objects.create(iteration=0, board_data=empty_board_state, state_data=empy_state_data)
     board_iteration.delay(iteration=1)
-    return HttpResponse('Start new')
+    return HttpResponseRedirect(reverse('board'))
 
 
 @login_required()

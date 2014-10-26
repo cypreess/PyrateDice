@@ -94,25 +94,25 @@ def board_iteration(iteration):
 
         board_data[u'message'] = ""
 
-        if board_data[u'last_player'] is None:
-            next_player = 0
+        if board_data['reset']:
+            # next_player = 0
             # initialize new dice for new game
-
+            board_data['reset'] = False
             for player in state_data['players']:
                 board_data['players'][player['id']]['dice'] = []
                 board_data['players'][player['id']]['bid'] = []
                 if board_data['players'][player['id']]['active']:
                     for i in range(player['dice']):
                         board_data['players'][player['id']]['dice'].append(randrange(1, 7))
-        else:
-            players_queue = cycle(board_data['players'])
-            for i in xrange(board_data['last_player'] + 1):
-                players_queue.next()
 
-            for player_candidate in players_queue:
-                if player_candidate['active']:
-                    next_player = player_candidate['id']
-                    break
+        players_queue = cycle(board_data['players'])
+        for i in xrange(board_data['last_player'] + 1):
+            players_queue.next()
+
+        for player_candidate in players_queue:
+            if player_candidate['active']:
+                next_player = player_candidate['id']
+                break
 
         print "NEXT PLAYER = %d " % next_player
 
@@ -125,6 +125,7 @@ def board_iteration(iteration):
             logger.warning("GAME END - player %s wins" % player_name)
             board_data['the_end'] = True
             board_data['message'] = "Player %s WINS!" % player_name
+            board_data['last_player'] = player_id
             BoardState.objects.create(iteration=iteration, board_data=board_data, state_data=state_data)
             return
 
@@ -186,8 +187,9 @@ def board_iteration(iteration):
                         # Player takes one die
                         state_data['players'][player_id]['dice'] += 1
 
-
-                board_data['last_player'] = None
+                board_data['players'][player_id]['bid'] = [count, die]
+                board_data['last_player'] = player_id
+                board_data['reset'] = True
                 state_data['gameplay'].append([player_id, player_name, count, die])
                 BoardState.objects.create(iteration=iteration, board_data=board_data, state_data=state_data)
 
